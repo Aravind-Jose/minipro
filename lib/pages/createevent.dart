@@ -21,6 +21,8 @@ class CreateEvent extends StatefulWidget {
 }
 
 class _CreateEventState extends State<CreateEvent> {
+  TextEditingController name = TextEditingController();
+  TextEditingController des = TextEditingController();
   String? type;
   String date = "";
   DateTime selectedDate = DateTime.now();
@@ -71,7 +73,8 @@ class _CreateEventState extends State<CreateEvent> {
     final DateTime? selected = await showDatePicker(
       context: context,
       initialDate: selectedDate1,
-      firstDate: DateTime(2010),
+      firstDate:
+          DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
       lastDate: DateTime(2025),
     );
     if (selected != null && selected != selectedDate)
@@ -133,11 +136,17 @@ class _CreateEventState extends State<CreateEvent> {
                       "${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}")
                 ],
               ),
-              FormFieldCus(name: "Event Name"),
+              FormFieldCus(
+                name: "Event Name",
+                con: name,
+              ),
               SizedBox(
                 height: 20,
               ),
-              FormFieldCus(name: "Description"),
+              FormFieldCus(
+                name: "Description",
+                con: des,
+              ),
               SizedBox(
                 height: 20,
               ),

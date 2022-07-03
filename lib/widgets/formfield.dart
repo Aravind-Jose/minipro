@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FormFieldCus extends StatefulWidget {
   final name;
-  const FormFieldCus({Key? key, this.name}) : super(key: key);
+  final TextEditingController con;
+  const FormFieldCus({Key? key, this.name, required this.con})
+      : super(key: key);
 
   @override
   State<FormFieldCus> createState() => _FormFieldCusState();
@@ -27,6 +30,12 @@ class _FormFieldCusState extends State<FormFieldCus> {
             height: widget.name == "Description" ? 100 : 50,
             child: Center(
               child: TextFormField(
+                // onChanged: (value) {
+                //   setState(() {
+                //     widget.con.text = value;
+                //   });
+                // },
+                controller: widget.con,
                 obscureText: widget.name == "password" ? true : false,
                 // keyboardType: name == "Description"
                 //     ? TextInputType.multiline

@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/main.dart';
+import 'package:eventnoti/pages/loginpage.dart';
 import 'package:eventnoti/widgets/dropdownlist.dart';
 import 'package:eventnoti/widgets/imagepicker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -20,7 +23,11 @@ class SignuppageUser extends StatefulWidget {
 }
 
 class _SignuppageUserState extends State<SignuppageUser> {
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  TextEditingController name = TextEditingController();
   dynamic val = [false, false, false];
+  dynamic interests = ["Coding", "Arts", "Webinar"];
 
   @override
   _getFromGallery() async {
@@ -58,15 +65,24 @@ class _SignuppageUserState extends State<SignuppageUser> {
           color: Color.fromARGB(255, 187, 179, 179),
           child: Column(
             children: [
-              FormFieldCus(name: "Username"),
+              FormFieldCus(
+                name: "Username",
+                con: email,
+              ),
               SizedBox(
                 height: 20,
               ),
-              FormFieldCus(name: "password"),
+              FormFieldCus(
+                name: "password",
+                con: password,
+              ),
               SizedBox(
                 height: 20,
               ),
-              FormFieldCus(name: "Name"),
+              FormFieldCus(
+                name: "Name",
+                con: name,
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -97,7 +113,7 @@ class _SignuppageUserState extends State<SignuppageUser> {
                               });
                             }),
                         CheckboxListTile(
-                            title: Text("Meetup"),
+                            title: Text("Webinar"),
                             value: val[2],
                             onChanged: (value) {
                               setState(() {
@@ -113,7 +129,42 @@ class _SignuppageUserState extends State<SignuppageUser> {
               SizedBox(
                 height: 20,
               ),
-              ElevatedButton(onPressed: (() {}), child: Text("Sign Up")),
+              ElevatedButton(
+                  onPressed: (() async {
+                    try {
+                      final credential = await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                        email: email.text,
+                        password: password.text,
+                      );
+                      final orgdata =
+                          FirebaseFirestore.instance.collection("user").doc();
+                      dynamic ins = [];
+                      for (int i = 0; i < val.length; i++) {
+                        if (val[i]) {
+                          ins.add(interests[i]);
+                        }
+                      }
+                      final json = {
+                        //'id': orgdata.id,
+                        'name': name.text,
+                        'username': email.text,
+
+                        'interests': ins,
+                      };
+                      orgdata.set(json);
+                      Get.to(Login());
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        print('The password provided is too weak.');
+                      } else if (e.code == 'email-already-in-use') {
+                        print('The account already exists for that email.');
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
+                  }),
+                  child: Text("Sign Up")),
             ],
           ),
         ),

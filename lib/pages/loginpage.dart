@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eventnoti/pages/homepageorg.dart';
+import 'package:eventnoti/pages/homepageuser.dart';
 import 'package:eventnoti/pages/selectionpage.dart';
 import 'package:eventnoti/pages/selectionpageLogin.dart';
 
@@ -15,6 +17,8 @@ bool load = false;
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
   //FirebaseFirestore ins = FirebaseFirestore.instance;
   late String _email = '', _password;
   double opacityLevel = 0.0;
@@ -73,6 +77,7 @@ class _LoginState extends State<Login> {
                                 height: 30,
                                 child: Center(
                                   child: TextFormField(
+                                    controller: email,
                                     // scrollPadding: EdgeInsets.all(0),
                                     validator: (val) {
                                       if (val!.isEmpty) {
@@ -118,6 +123,7 @@ class _LoginState extends State<Login> {
                                     Container(
                                       height: 30,
                                       child: TextFormField(
+                                        controller: password,
                                         validator: (input) {
                                           if (input!.length < 6) {
                                             return 'Longer password please';
@@ -170,8 +176,31 @@ class _LoginState extends State<Login> {
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),
                     color: Color(0xFFD5D5D5),
-                    onPressed: () {
-                      Get.to(SelectionpageLo());
+                    onPressed: () async {
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: email.text, password: password.text);
+
+                        QuerySnapshot<Map<String, dynamic>> doc =
+                            await FirebaseFirestore.instance
+                                .collection('user')
+                                .where('username', isEqualTo: '${email.text}')
+                                .get();
+                        if (doc.docs.isNotEmpty) {
+                          // todo
+                          Get.to(HomePageUser());
+                        } else {
+                          // todo
+                          Get.to(HomePageOrg());
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'user-not-found') {
+                          print('No user found for that email.');
+                        } else if (e.code == 'wrong-password') {
+                          print('Wrong password provided for that user.');
+                        }
+                      }
                     },
                     child: Container(
                       width: 100,

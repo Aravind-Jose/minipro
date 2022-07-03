@@ -11,14 +11,14 @@ List<DropdownMenuItem<String>> get dropdownItems {
 }
 
 class DropDownButtonCus extends StatefulWidget {
-  const DropDownButtonCus({Key? key}) : super(key: key);
+  static String selectedValue = "USA";
+  DropDownButtonCus({Key? key}) : super(key: key);
 
   @override
   State<DropDownButtonCus> createState() => _DropDownButtonCusState();
 }
 
 class _DropDownButtonCusState extends State<DropDownButtonCus> {
-  String selectedValue = "USA";
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
@@ -37,10 +37,10 @@ class _DropDownButtonCusState extends State<DropDownButtonCus> {
           fillColor: Colors.white,
         ),
         //dropdownColor: Colors.blueAccent,
-        value: selectedValue,
+        value: DropDownButtonCus.selectedValue,
         onChanged: (String? newValue) {
           setState(() {
-            selectedValue = newValue!;
+            DropDownButtonCus.selectedValue = newValue!;
           });
         },
         items: dropdownItems);
