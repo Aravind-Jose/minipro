@@ -137,8 +137,9 @@ class _SignuppageUserState extends State<SignuppageUser> {
                         email: email.text,
                         password: password.text,
                       );
-                      final orgdata =
-                          FirebaseFirestore.instance.collection("user").doc();
+                      final orgdata = FirebaseFirestore.instance
+                          .collection("user")
+                          .doc(credential.user!.uid);
                       dynamic ins = [];
                       for (int i = 0; i < val.length; i++) {
                         if (val[i]) {
@@ -149,7 +150,6 @@ class _SignuppageUserState extends State<SignuppageUser> {
                         //'id': orgdata.id,
                         'name': name.text,
                         'username': email.text,
-
                         'interests': ins,
                       };
                       orgdata.set(json);

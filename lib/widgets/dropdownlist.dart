@@ -2,17 +2,28 @@ import 'package:flutter/material.dart';
 
 List<DropdownMenuItem<String>> get dropdownItems {
   List<DropdownMenuItem<String>> menuItems = [
-    DropdownMenuItem(child: Text("USA"), value: "USA"),
-    DropdownMenuItem(child: Text("Canada"), value: "Canada"),
-    DropdownMenuItem(child: Text("Brazil"), value: "Brazil"),
-    DropdownMenuItem(child: Text("England"), value: "England"),
+    DropdownMenuItem(child: Text("IEEE"), value: "IEEE"),
+    DropdownMenuItem(child: Text("MACE"), value: "MACE"),
+    DropdownMenuItem(child: Text("IEDC"), value: "IEDC"),
+    DropdownMenuItem(child: Text("KERALA"), value: "KERALA"),
+  ];
+  return menuItems;
+}
+
+List<DropdownMenuItem<String>> get dropdownItems2 {
+  List<DropdownMenuItem<String>> menuItems = [
+    DropdownMenuItem(child: Text("Coding"), value: "Coding"),
+    DropdownMenuItem(child: Text("Arts"), value: "Arts"),
+    DropdownMenuItem(child: Text("Sports"), value: "Sports"),
   ];
   return menuItems;
 }
 
 class DropDownButtonCus extends StatefulWidget {
-  static String selectedValue = "USA";
-  DropDownButtonCus({Key? key}) : super(key: key);
+  String type;
+  static String selectedValue = "IEEE";
+  static String selectedValue2 = "Coding";
+  DropDownButtonCus({Key? key, required this.type}) : super(key: key);
 
   @override
   State<DropDownButtonCus> createState() => _DropDownButtonCusState();
@@ -37,12 +48,16 @@ class _DropDownButtonCusState extends State<DropDownButtonCus> {
           fillColor: Colors.white,
         ),
         //dropdownColor: Colors.blueAccent,
-        value: DropDownButtonCus.selectedValue,
+        value: widget.type == "1"
+            ? DropDownButtonCus.selectedValue
+            : DropDownButtonCus.selectedValue2,
         onChanged: (String? newValue) {
           setState(() {
-            DropDownButtonCus.selectedValue = newValue!;
+            widget.type == "1"
+                ? DropDownButtonCus.selectedValue = newValue!
+                : DropDownButtonCus.selectedValue2 = newValue!;
           });
         },
-        items: dropdownItems);
+        items: widget.type == "1" ? dropdownItems : dropdownItems2);
   }
 }

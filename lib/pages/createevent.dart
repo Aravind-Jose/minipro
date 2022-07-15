@@ -1,8 +1,11 @@
 import 'dart:io';
-
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/main.dart';
+import 'package:eventnoti/pages/homepageorg.dart';
 import 'package:eventnoti/widgets/dropdownlist.dart';
 import 'package:eventnoti/widgets/imagepicker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -28,6 +31,8 @@ class _CreateEventState extends State<CreateEvent> {
   DateTime selectedDate = DateTime.now();
   String date1 = "";
   DateTime selectedDate1 = DateTime.now();
+  var name_us;
+  var us;
   @override
   _getFromGallery() async {
     PickedFile? pickedFile = await ImagePicker().getImage(
@@ -72,7 +77,7 @@ class _CreateEventState extends State<CreateEvent> {
   _selectDate1(BuildContext context) async {
     final DateTime? selected = await showDatePicker(
       context: context,
-      initialDate: selectedDate1,
+      initialDate: selectedDate,
       firstDate:
           DateTime(selectedDate.year, selectedDate.month, selectedDate.day),
       lastDate: DateTime(2025),
@@ -95,7 +100,7 @@ class _CreateEventState extends State<CreateEvent> {
                 children: [
                   Text("Online"),
                   Radio(
-                      value: "Online",
+                      value: "online",
                       groupValue: type,
                       onChanged: (value) {
                         setState(() {
@@ -158,7 +163,24 @@ class _CreateEventState extends State<CreateEvent> {
                         child: Text("Region"),
                       )),
                   Expanded(
-                    child: DropDownButtonCus(),
+                    child: DropDownButtonCus(
+                      type: "1",
+                    ),
+                    flex: 3,
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Container(
+                        child: Text("Category"),
+                      )),
+                  Expanded(
+                    child: DropDownButtonCus(
+                      type: "2",
+                    ),
                     flex: 3,
                   )
                 ],
@@ -212,7 +234,41 @@ class _CreateEventState extends State<CreateEvent> {
               SizedBox(
                 height: 20,
               ),
-              ElevatedButton(onPressed: (() {}), child: Text("Sign Up")),
+              ElevatedButton(
+                  onPressed: (() async {
+                    final orgdata = FirebaseFirestore.instance
+                        .collection("events")
+                        .doc(name.text);
+                    final User? user = FirebaseAuth.instance.currentUser;
+                    print(user!.email);
+                    var collection =
+                        FirebaseFirestore.instance.collection("organization");
+                    var querySnapshot = await collection.get();
+                    for (var queryDocumentSnapshot in querySnapshot.docs) {
+                      Map<String, dynamic> data = queryDocumentSnapshot.data();
+                      name_us = data['name'];
+                      us = data['username'];
+                      print(us + " ss" + name_us);
+                      if (us == user.email) {
+                        break;
+                      }
+                    }
+                    final json = {
+                      //'id': orgdata.id,
+                      'name': name.text,
+                      'organizationname': name_us,
+                      'description': des.text,
+                      'region': DropDownButtonCus.selectedValue,
+                      'category': DropDownButtonCus.selectedValue2,
+                      'startDate':
+                          DateFormat('yyyy-MM-dd').format(selectedDate),
+                      'endDate': DateFormat('yyyy-MM-dd').format(selectedDate1),
+                      'username': us,
+                    };
+                    orgdata.set(json);
+                    Get.to(HomePageOrg());
+                  }),
+                  child: Text("Create Event")),
             ],
           ),
         ),

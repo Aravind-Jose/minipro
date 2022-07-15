@@ -1,4 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/pages/createevent.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -43,7 +47,7 @@ class _HomePageOrgState extends State<HomePageOrg>
               : null,
           body: TabBarView(
               controller: _tabController,
-              children: [Text("1"), EventRe(), OrgRe()]),
+              children: [dashboard(), EventRe(), OrgRe()]),
           bottomNavigationBar: BottomAppBar(
             elevation: 100,
             child: Container(
@@ -56,6 +60,80 @@ class _HomePageOrgState extends State<HomePageOrg>
                 ])),
           ),
         ));
+  }
+}
+
+class dashboard extends StatefulWidget {
+  const dashboard({Key? key}) : super(key: key);
+
+  @override
+  State<dashboard> createState() => _dashboardState();
+}
+
+class _dashboardState extends State<dashboard> {
+  Future<int> st() async {
+    return 1;
+  }
+
+  final db = FirebaseFirestore.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: db.collection('events').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else
+            // ignore: curly_braces_in_flow_control_structures
+            return ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: snapshot.data!.docs.map((doc) {
+                Map<String, dynamic>? data =
+                    doc.data() as Map<String, dynamic>?;
+                DateTime d1 = DateTime.parse(data!['endDate']);
+                DateTime now = new DateTime.now();
+                DateTime d2 = new DateTime(now.year, now.month, now.day);
+                final User? user = FirebaseAuth.instance.currentUser;
+                print(user!.email);
+                if (data['username'] == user.email) {
+                  return Card(
+                    child: ListTile(
+                      // trailing: Expanded(
+                      //   child: Row(
+                      //     children: [
+                      //       Text(data['endDate'].toString()),
+                      //       Text(data['startDate'].toString()),
+                      //     ],
+                      //   ),
+                      // ),
+                      title: Row(
+                        children: [
+                          Text(data['name'].toString()),
+                          Expanded(child: SizedBox()),
+                          Text("Start: ${data['startDate'].toString()}"),
+                        ],
+                      ),
+                      subtitle: Row(
+                        children: [
+                          Text(data['description'].toString()),
+                          Expanded(child: SizedBox()),
+                          Text("End: ${data['endDate'].toString()}"),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Card();
+              }).toList(),
+            );
+        },
+      ),
+    );
   }
 }
 

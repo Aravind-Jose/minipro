@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/main.dart';
+import 'package:eventnoti/pages/aa.dart';
 import 'package:eventnoti/pages/loginpage.dart';
 import 'package:eventnoti/widgets/dropdownlist.dart';
 import 'package:eventnoti/widgets/imagepicker.dart';
@@ -99,7 +100,9 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                         child: Text("Region"),
                       )),
                   Expanded(
-                    child: DropDownButtonCus(),
+                    child: DropDownButtonCus(
+                      type: "1",
+                    ),
                     flex: 3,
                   )
                 ],
@@ -111,43 +114,44 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                       child: Container(
                         child: Text("Image"),
                       )),
-                  Expanded(
-                    child: Center(
-                        child: imageFile == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  RaisedButton(
-                                    color: Colors.greenAccent,
-                                    onPressed: () {
-                                      _getFromGallery();
-                                      //Navigator.pop(context);
-                                    },
-                                    child: Text("PICK FROM GALLERY"),
-                                  ),
-                                  Container(
-                                    height: 20.0,
-                                  ),
-                                  RaisedButton(
-                                    color: Colors.lightGreenAccent,
-                                    onPressed: () {
-                                      _getFromCamera();
-                                      //Navigator.pop(context);
-                                    },
-                                    child: Text("PICK FROM CAMERA"),
-                                  )
-                                ],
-                              )
-                            : Container(
-                                height: 100,
-                                width: 100,
-                                child: Image.file(
-                                  imageFile!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )),
-                    flex: 3,
-                  )
+                  // Expanded(
+                  //   child: Center(
+                  //       child: imageFile == null
+                  //           ? Column(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               children: <Widget>[
+                  //                 RaisedButton(
+                  //                   color: Colors.greenAccent,
+                  //                   onPressed: () {
+                  //                     _getFromGallery();
+                  //                     //Navigator.pop(context);
+                  //                   },
+                  //                   child: Text("PICK FROM GALLERY"),
+                  //                 ),
+                  //                 Container(
+                  //                   height: 20.0,
+                  //                 ),
+                  //                 RaisedButton(
+                  //                   color: Colors.lightGreenAccent,
+                  //                   onPressed: () {
+                  //                     _getFromCamera();
+                  //                     //Navigator.pop(context);
+                  //                   },
+                  //                   child: Text("PICK FROM CAMERA"),
+                  //                 )
+                  //               ],
+                  //             )
+                  //           : Container(
+                  //               height: 100,
+                  //               width: 100,
+                  //               child: Image.file(
+                  //                 imageFile!,
+                  //                 fit: BoxFit.cover,
+                  //               ),
+                  //             )),
+                  //   flex: 3,
+                  // )
+                  Expanded(child: ImageUploads()),
                 ],
               ),
               SizedBox(
@@ -163,15 +167,19 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                       );
                       final orgdata = FirebaseFirestore.instance
                           .collection("organization")
-                          .doc();
+                          .doc(name.text);
                       final json = {
                         //'id': orgdata.id,
                         'name': name.text,
                         'username': email.text,
                         'description': des.text,
                         'region': DropDownButtonCus.selectedValue,
+                        'pendingmembers': [],
+                        'pendingmembersid': [],
+                        'approvedmembers': [],
                       };
                       orgdata.set(json);
+
                       Get.to(Login());
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'weak-password') {
