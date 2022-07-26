@@ -6,6 +6,8 @@ List<DropdownMenuItem<String>> get dropdownItems {
     DropdownMenuItem(child: Text("MACE"), value: "MACE"),
     DropdownMenuItem(child: Text("IEDC"), value: "IEDC"),
     DropdownMenuItem(child: Text("KERALA"), value: "KERALA"),
+    DropdownMenuItem(child: Text("IIT"), value: "IIT"),
+    DropdownMenuItem(child: Text("Exclusive"), value: "Exclusive"),
   ];
   return menuItems;
 }

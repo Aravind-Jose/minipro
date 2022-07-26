@@ -23,31 +23,51 @@ class _OrgUserRegState extends State<OrgUserReg> {
   var querySnapshot;
   var collection;
   var lis = [];
-  var lis1 = [];
+  //var lis1 = [];
   final User? user = FirebaseAuth.instance.currentUser;
   String buttonText = "Register";
+  String res = "pending";
+  int flag = 1;
+  var dem = [];
   Future<int> st() async {
     collection = FirebaseFirestore.instance.collection("organization");
     querySnapshot = await collection.get();
     for (var queryDocumentSnapshot in querySnapshot.docs) {
       Map<String, dynamic> data1 = queryDocumentSnapshot.data();
-
+      flag = 1;
       if (data1['name'] == widget.name) {
-        if (data1['approvedmembers'] != null &&
-            data1['approvedmembers'].contains(user!.email)) {
-          buttonText = 'approved';
-        } else if (data1['pendingmembers'] != null &&
-            data1['pendingmembers'].contains(user!.email)) {
-          buttonText = 'pending';
-        } else {
+        if (data1['approvedmembers'] != []) {
+          dem = data1['approvedmembers'];
+
+          for (int i = 0; i < dem.length; i++) {
+            if (dem[i]["username"] == user!.email) {
+              flag = 0;
+              res = "Approved";
+              buttonText = "Check";
+              return 1;
+            }
+          }
+        }
+        if (data1['pendingmembers'] != []) {
+          dem = data1['pendingmembers'];
+
+          for (int i = 0; i < dem.length; i++) {
+            if (dem[i]["username"] == user!.email) {
+              flag = 0;
+              res = "Pending";
+              buttonText = "Check";
+              return 1;
+            }
+          }
+        }
+        if (flag == 1) {
           buttonText = 'Register';
-          if (data1['pendingmembers'] == null ||
-              data1['pendingmembersid'] == null) {
+          if (data1['pendingmembers'] != []) {
+            print("fdsf");
             lis = [];
-            lis1 = [];
           } else {
             lis = data1['pendingmembers'];
-            lis1 = data1['pendingmembersid'];
+            print(lis);
           }
         }
         break;
@@ -63,34 +83,83 @@ class _OrgUserRegState extends State<OrgUserReg> {
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            bottomNavigationBar: ElevatedButton(
-                onPressed: buttonText == "Register"
-                    ? () {
-                        lis.add(user!.email);
-                        lis1.add(regno.text);
+            body: Center(
+              child: Material(
+                elevation: 20,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  height: 200,
+                  width: 200,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            widget.name,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(widget.desc),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: 150,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            //fillColor: Colors.orange, filled: true
+                            hintText: "Enter your regno",
+                          ),
+                          controller: regno,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                          onPressed: buttonText == "Register"
+                              ? () {
+                                  lis.add({
+                                    "username": user!.email,
+                                    "id": regno.text
+                                  });
 
-                        /// want to correct the details needed to be added to the database want to add email and registration number
-                        CollectionReference users1 = FirebaseFirestore.instance
-                            .collection('organization');
-                        print(lis);
-                        users1.doc(widget.name).update({
-                          'pendingmembers': lis,
-                          'pendingmembersid': lis1,
-                        });
-                        Get.back();
-                      }
-                    : null,
-                child: Text(buttonText)),
-            body: Column(
-              children: [
-                Text(
-                  widget.name,
+                                  /// want to correct the details needed to be added to the database want to add email and registration number
+                                  CollectionReference users1 = FirebaseFirestore
+                                      .instance
+                                      .collection('organization');
+                                  print(lis);
+
+                                  users1.doc(widget.name).update({
+                                    'pendingmembers': lis,
+                                  });
+                                  Get.back();
+                                }
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      content: Text(res),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                          },
+                                          child: const Text("Okay"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                          child: Text(buttonText))
+                    ],
+                  ),
                 ),
-                Text(widget.desc),
-                TextField(
-                  controller: regno,
-                ),
-              ],
+              ),
             ),
           );
         } else {

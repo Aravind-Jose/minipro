@@ -61,7 +61,13 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          color: Color.fromARGB(255, 187, 179, 179),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("images/bg.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
           child: Column(
             children: [
               FormFieldCus(
@@ -95,24 +101,33 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
               Row(
                 children: [
                   Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: Container(
-                        child: Text("Region"),
+                        child: Text("Region",
+                            style: TextStyle(
+                              fontSize: 20,
+                            )),
                       )),
                   Expanded(
                     child: DropDownButtonCus(
                       type: "1",
                     ),
-                    flex: 3,
+                    flex: 2,
                   )
                 ],
+              ),
+              SizedBox(
+                height: 25,
               ),
               Row(
                 children: [
                   Expanded(
                       flex: 1,
                       child: Container(
-                        child: Text("Image"),
+                        child: Text("Image",
+                            style: TextStyle(
+                              fontSize: 20,
+                            )),
                       )),
                   // Expanded(
                   //   child: Center(
@@ -151,47 +166,69 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                   //             )),
                   //   flex: 3,
                   // )
-                  Expanded(child: ImageUploads()),
+                  Expanded(
+                      child: ImageUploads(
+                    name: name.text,
+                    cat: 'organization',
+                  )),
                 ],
               ),
-              SizedBox(
-                height: 20,
+              Expanded(
+                child: SizedBox(
+                  height: 20,
+                ),
               ),
-              ElevatedButton(
-                  onPressed: (() async {
-                    try {
-                      final credential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: email.text,
-                        password: password.text,
-                      );
-                      final orgdata = FirebaseFirestore.instance
-                          .collection("organization")
-                          .doc(name.text);
-                      final json = {
-                        //'id': orgdata.id,
-                        'name': name.text,
-                        'username': email.text,
-                        'description': des.text,
-                        'region': DropDownButtonCus.selectedValue,
-                        'pendingmembers': [],
-                        'pendingmembersid': [],
-                        'approvedmembers': [],
-                      };
-                      orgdata.set(json);
+              Container(
+                height: 60,
+                width: 180,
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ))),
+                    onPressed: (() async {
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: email.text,
+                          password: password.text,
+                        );
+                        final orgdata = FirebaseFirestore.instance
+                            .collection("organization")
+                            .doc(name.text);
+                        final json = {
+                          //'id': orgdata.id,
+                          'name': name.text,
+                          'username': email.text,
+                          'description': des.text,
+                          'region': DropDownButtonCus.selectedValue,
+                          'pendingmembers': [],
+                          'approvedmembers': [],
+                          'deniedmembers': [],
+                          'url': ImageUploads.url,
+                        };
+                        orgdata.set(json);
 
-                      Get.to(Login());
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'weak-password') {
-                        print('The password provided is too weak.');
-                      } else if (e.code == 'email-already-in-use') {
-                        print('The account already exists for that email.');
+                        Get.to(Login());
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'weak-password') {
+                          print('The password provided is too weak.');
+                        } else if (e.code == 'email-already-in-use') {
+                          print('The account already exists for that email.');
+                        }
+                      } catch (e) {
+                        print(e);
                       }
-                    } catch (e) {
-                      print(e);
-                    }
-                  }),
-                  child: Text("Sign Up")),
+                    }),
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(fontSize: 20),
+                    )),
+              ),
             ],
           ),
         ),

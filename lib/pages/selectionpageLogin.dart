@@ -17,14 +17,44 @@ class SelectionpageLo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: GestureDetector(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("images/bg.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(HomePageOrg());
+                },
+                child: Container(
+                  width: 150,
+                  height: 50,
+                  decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  child: Center(
+                    child: Text("Oraganisation",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
               onTap: () {
-                Get.to(HomePageOrg());
+                Get.to(HomePageUser());
               },
               child: Container(
                 width: 150,
@@ -33,38 +63,16 @@ class SelectionpageLo extends StatelessWidget {
                     color: Colors.green,
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 child: Center(
-                  child: Text("Oraganisation",
+                  child: Text("User",
                       style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
                           fontWeight: FontWeight.bold)),
                 ),
               ),
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.to(HomePageUser());
-            },
-            child: Container(
-              width: 150,
-              height: 50,
-              decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-              child: Center(
-                child: Text("User",
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold)),
-              ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

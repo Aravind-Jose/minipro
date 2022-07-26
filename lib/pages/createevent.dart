@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
+import 'package:eventnoti/pages/aa.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/main.dart';
@@ -24,8 +26,10 @@ class CreateEvent extends StatefulWidget {
 }
 
 class _CreateEventState extends State<CreateEvent> {
+  TimeOfDay selectedTime = TimeOfDay(hour: 24, minute: 47);
   TextEditingController name = TextEditingController();
   TextEditingController des = TextEditingController();
+  TextEditingController time = TextEditingController();
   String? type;
   String date = "";
   DateTime selectedDate = DateTime.now();
@@ -88,17 +92,40 @@ class _CreateEventState extends State<CreateEvent> {
       });
   }
 
+  _selectTime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    if (timeOfDay != null && timeOfDay != selectedTime) {
+      setState(() {
+        selectedTime = timeOfDay;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          color: Color.fromARGB(255, 187, 179, 179),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("images/bg.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          padding: EdgeInsets.all(10),
+          //color: Color.fromARGB(255, 187, 179, 179),
           child: Column(
             children: [
               Row(
                 children: [
-                  Text("Online"),
+                  Text(
+                    "Mode",
+                    style: TextStyle(fontSize: 20),
+                  ),
                   Radio(
                       value: "online",
                       groupValue: type,
@@ -107,8 +134,16 @@ class _CreateEventState extends State<CreateEvent> {
                           type = value.toString();
                         });
                       }),
-                  Text("Offline"),
+                  Text(
+                    "Online",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(
+                    width: 50,
+                  ),
                   Radio(
+                      //MaterialStateProperty.all<Color>(Colors.white)
+                      //hoverColor: Colors.white,
                       value: "Offline",
                       groupValue: type,
                       onChanged: (value) {
@@ -116,6 +151,10 @@ class _CreateEventState extends State<CreateEvent> {
                           type = value.toString();
                         });
                       }),
+                  Text(
+                    "Offline",
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ],
               ),
               Row(
@@ -139,6 +178,19 @@ class _CreateEventState extends State<CreateEvent> {
                       icon: Icon(Icons.edit_calendar_outlined)),
                   Text(
                       "${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}")
+                ],
+              ),
+              Row(
+                children: [
+                  Text("Start Time"),
+                  selectedTime.hour == 24 && selectedTime.minute == 47
+                      ? ElevatedButton(
+                          onPressed: () {
+                            _selectTime(context);
+                          },
+                          child: Text("Choose Time"),
+                        )
+                      : Text("${selectedTime.hour}:${selectedTime.minute}"),
                 ],
               ),
               FormFieldCus(
@@ -193,40 +245,7 @@ class _CreateEventState extends State<CreateEvent> {
                         child: Text("Image"),
                       )),
                   Expanded(
-                    child: Center(
-                        child: imageFile == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  RaisedButton(
-                                    color: Colors.greenAccent,
-                                    onPressed: () {
-                                      _getFromGallery();
-                                      //Navigator.pop(context);
-                                    },
-                                    child: Text("PICK FROM GALLERY"),
-                                  ),
-                                  Container(
-                                    height: 20.0,
-                                  ),
-                                  RaisedButton(
-                                    color: Colors.lightGreenAccent,
-                                    onPressed: () {
-                                      _getFromCamera();
-                                      //Navigator.pop(context);
-                                    },
-                                    child: Text("PICK FROM CAMERA"),
-                                  )
-                                ],
-                              )
-                            : Container(
-                                height: 100,
-                                width: 100,
-                                child: Image.file(
-                                  imageFile!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )),
+                    child: ImageUploads(cat: "events", name: name.text),
                     flex: 3,
                   )
                 ],
@@ -253,6 +272,20 @@ class _CreateEventState extends State<CreateEvent> {
                         break;
                       }
                     }
+                    int scor = 0;
+                    if ((DropDownButtonCus.selectedValue == "IIT" ||
+                            DropDownButtonCus.selectedValue == "NIT") &&
+                        type == "online") {
+                      scor = 4;
+                    } else if ((DropDownButtonCus.selectedValue == "IIT" ||
+                            DropDownButtonCus.selectedValue == "NIT") &&
+                        type == "offline") {
+                      scor = 3;
+                    } else if (type == "online") {
+                      scor = 2;
+                    } else if (type == "offline") {
+                      scor = 1;
+                    }
                     final json = {
                       //'id': orgdata.id,
                       'name': name.text,
@@ -263,7 +296,13 @@ class _CreateEventState extends State<CreateEvent> {
                       'startDate':
                           DateFormat('yyyy-MM-dd').format(selectedDate),
                       'endDate': DateFormat('yyyy-MM-dd').format(selectedDate1),
+                      'startTime': selectedTime.hour.toString() +
+                          ":" +
+                          selectedTime.minute.toString(),
                       'username': us,
+                      'url': ImageUploads.url,
+                      'type': type,
+                      'score': scor,
                     };
                     orgdata.set(json);
                     Get.to(HomePageOrg());

@@ -7,7 +7,10 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart';
 
 class ImageUploads extends StatefulWidget {
-  ImageUploads({Key? key}) : super(key: key);
+  late String cat, name;
+  static String url = "a";
+  ImageUploads({Key? key, required this.cat, required this.name})
+      : super(key: key);
 
   @override
   _ImageUploadsState createState() => _ImageUploadsState();
@@ -48,14 +51,18 @@ class _ImageUploadsState extends State<ImageUploads> {
 
   Future uploadFile() async {
     if (_photo == null) return;
-    final fileName = basename(_photo!.path);
-    final destination = 'files/$fileName';
+    final fileName = widget.name;
+    final destination = 'files/${widget.cat}//$fileName';
 
     try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination)
-          .child('file/');
+      final ref =
+          firebase_storage.FirebaseStorage.instance.ref().child(destination);
       await ref.putFile(_photo!);
+      setState(() {
+        ImageUploads.url = "";
+      });
+      ImageUploads.url = await ref.getDownloadURL();
+      print(ImageUploads.url);
     } catch (e) {
       print(e);
     }
@@ -68,32 +75,30 @@ class _ImageUploadsState extends State<ImageUploads> {
         onTap: () {
           _showPicker(context);
         },
-        child: CircleAvatar(
-          //radius: 55,
-          backgroundColor: Color(0xffFDCF09),
-          child: _photo != null
-              ? ClipRRect(
-                  //borderRadius: BorderRadius.circular(50),
-                  child: Image.file(
-                    _photo!,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.fitHeight,
-                  ),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    //borderRadius: BorderRadius.circular(50)
-                  ),
-                  width: 100,
-                  height: 100,
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[800],
-                  ),
+        child: _photo != null
+            ? ImageUploads.url == "a"
+                ? CircularProgressIndicator()
+                : ClipRRect(
+                    //borderRadius: BorderRadius.circular(50),
+                    child: Image.file(
+                      _photo!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  )
+            : Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  //borderRadius: BorderRadius.circular(50)
                 ),
-        ),
+                width: 100,
+                height: 100,
+                child: Icon(
+                  Icons.camera_alt,
+                  color: Colors.grey[800],
+                ),
+              ),
       ),
     );
   }

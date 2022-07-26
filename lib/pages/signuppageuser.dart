@@ -62,7 +62,13 @@ class _SignuppageUserState extends State<SignuppageUser> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          color: Color.fromARGB(255, 187, 179, 179),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("images/bg.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
           child: Column(
             children: [
               FormFieldCus(
@@ -73,7 +79,7 @@ class _SignuppageUserState extends State<SignuppageUser> {
                 height: 20,
               ),
               FormFieldCus(
-                name: "password",
+                name: "Password",
                 con: password,
               ),
               SizedBox(
@@ -86,85 +92,96 @@ class _SignuppageUserState extends State<SignuppageUser> {
               SizedBox(
                 height: 20,
               ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text("Interests"),
-                      )),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        CheckboxListTile(
-                            title: Text("Coding"),
-                            value: val[0],
-                            onChanged: (value) {
-                              setState(() {
-                                val[0] = value;
-                              });
-                            }),
-                        CheckboxListTile(
-                            title: Text("Arts"),
-                            value: val[1],
-                            onChanged: (value) {
-                              setState(() {
-                                val[1] = value;
-                              });
-                            }),
-                        CheckboxListTile(
-                            title: Text("Webinar"),
-                            value: val[2],
-                            onChanged: (value) {
-                              setState(() {
-                                val[2] = value;
-                              });
-                            }),
-                      ],
-                    ),
-                    flex: 3,
-                  )
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    Text("Interests", style: TextStyle(fontSize: 20)),
+                    CheckboxListTile(
+                        title: Text("Coding"),
+                        value: val[0],
+                        onChanged: (value) {
+                          setState(() {
+                            val[0] = value;
+                          });
+                        }),
+                    CheckboxListTile(
+                        title: Text("Arts"),
+                        value: val[1],
+                        onChanged: (value) {
+                          setState(() {
+                            val[1] = value;
+                          });
+                        }),
+                    CheckboxListTile(
+                        title: Text("Webinar"),
+                        value: val[2],
+                        onChanged: (value) {
+                          setState(() {
+                            val[2] = value;
+                          });
+                        }),
+                  ],
+                ),
+                flex: 3,
               ),
               SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                  onPressed: (() async {
-                    try {
-                      final credential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: email.text,
-                        password: password.text,
-                      );
-                      final orgdata = FirebaseFirestore.instance
-                          .collection("user")
-                          .doc(credential.user!.uid);
-                      dynamic ins = [];
-                      for (int i = 0; i < val.length; i++) {
-                        if (val[i]) {
-                          ins.add(interests[i]);
+              Container(
+                height: 60,
+                width: 180,
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ))),
+                    onPressed: (() async {
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: email.text,
+                          password: password.text,
+                        );
+                        final orgdata = FirebaseFirestore.instance
+                            .collection("user")
+                            .doc(credential.user!.email);
+                        dynamic ins = [];
+                        for (int i = 0; i < val.length; i++) {
+                          if (val[i]) {
+                            ins.add(interests[i]);
+                          }
                         }
+                        List u = [];
+                        final json = {
+                          //'id': orgdata.id,
+                          'name': name.text,
+                          'username': email.text,
+                          'interests': ins,
+                          'favourite': [],
+                          'regEvents': [],
+                          'organizations': u,
+                        };
+                        orgdata.set(json);
+                        Get.to(Login());
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'weak-password') {
+                          print('The password provided is too weak.');
+                        } else if (e.code == 'email-already-in-use') {
+                          print('The account already exists for that email.');
+                        }
+                      } catch (e) {
+                        print(e);
                       }
-                      final json = {
-                        //'id': orgdata.id,
-                        'name': name.text,
-                        'username': email.text,
-                        'interests': ins,
-                      };
-                      orgdata.set(json);
-                      Get.to(Login());
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'weak-password') {
-                        print('The password provided is too weak.');
-                      } else if (e.code == 'email-already-in-use') {
-                        print('The account already exists for that email.');
-                      }
-                    } catch (e) {
-                      print(e);
-                    }
-                  }),
-                  child: Text("Sign Up")),
+                    }),
+                    child: Text(
+                      "SignUp",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )),
+              ),
             ],
           ),
         ),

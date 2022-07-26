@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/pages/createevent.dart';
+import 'package:eventnoti/pages/loginpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,6 +36,19 @@ class _HomePageOrgState extends State<HomePageOrg>
     return DefaultTabController(
         length: 3,
         child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              GestureDetector(
+                child: Icon(Icons.logout),
+                onTap: () {
+                  Get.to(Login());
+                },
+              ),
+              SizedBox(
+                width: 20,
+              )
+            ],
+          ),
           floatingActionButton: _tabController.index == 1
               ? FloatingActionButton(
                   shape: StadiumBorder(),
@@ -54,14 +70,34 @@ class _HomePageOrgState extends State<HomePageOrg>
                 color: Colors.black,
                 height: 60,
                 child: TabBar(controller: _tabController, tabs: [
-                  Text("Home"),
-                  Text("Events"),
-                  Text("Oranganization"),
+                  Row(
+                    children: [
+                      Icon(Icons.home),
+                      SizedBox(width: 10),
+                      Text("Home"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today),
+                      SizedBox(width: 10),
+                      Text("Events"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 10),
+                      Text("Requests"),
+                    ],
+                  ),
                 ])),
           ),
         ));
   }
 }
+
+String a = "";
 
 class dashboard extends StatefulWidget {
   const dashboard({Key? key}) : super(key: key);
@@ -84,52 +120,69 @@ class _dashboardState extends State<dashboard> {
         stream: db.collection('events').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           } else
             // ignore: curly_braces_in_flow_control_structures
-            return ListView(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              children: snapshot.data!.docs.map((doc) {
-                Map<String, dynamic>? data =
-                    doc.data() as Map<String, dynamic>?;
-                DateTime d1 = DateTime.parse(data!['endDate']);
-                DateTime now = new DateTime.now();
-                DateTime d2 = new DateTime(now.year, now.month, now.day);
-                final User? user = FirebaseAuth.instance.currentUser;
-                print(user!.email);
-                if (data['username'] == user.email) {
-                  return Card(
-                    child: ListTile(
-                      // trailing: Expanded(
-                      //   child: Row(
-                      //     children: [
-                      //       Text(data['endDate'].toString()),
-                      //       Text(data['startDate'].toString()),
-                      //     ],
-                      //   ),
-                      // ),
-                      title: Row(
-                        children: [
-                          Text(data['name'].toString()),
-                          Expanded(child: SizedBox()),
-                          Text("Start: ${data['startDate'].toString()}"),
-                        ],
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: snapshot.data!.docs.map((doc) {
+                  Map<String, dynamic>? data =
+                      doc.data() as Map<String, dynamic>?;
+                  DateTime d1 = DateTime.parse(data!['endDate']);
+                  DateTime now = new DateTime.now();
+                  DateTime d2 = new DateTime(now.year, now.month, now.day);
+                  final User? user = FirebaseAuth.instance.currentUser;
+                  print(user!.email);
+                  if (data['username'] == user.email) {
+                    a = data['organizationname'];
+                    return Card(
+                      child: ListTile(
+                        // trailing: Expanded(
+                        //   child: Row(
+                        //     children: [
+                        //       Text(data['endDate'].toString()),
+                        //       Text(data['startDate'].toString()),
+                        //     ],
+                        //   ),
+                        // ),
+                        title: Row(
+                          children: [
+                            Text(data['name'].toString()),
+                            Expanded(child: SizedBox()),
+                            Text("Start: ${data['startDate'].toString()}"),
+                          ],
+                        ),
+                        subtitle: Row(
+                          children: [
+                            Text(data['description'].toString()),
+                            Expanded(child: SizedBox()),
+                            Text("End: ${data['endDate'].toString()}"),
+                          ],
+                        ),
                       ),
-                      subtitle: Row(
-                        children: [
-                          Text(data['description'].toString()),
-                          Expanded(child: SizedBox()),
-                          Text("End: ${data['endDate'].toString()}"),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return Card();
-              }).toList(),
+                    );
+                  }
+                  return Card();
+                }).toList(),
+              ),
             );
         },
       ),
@@ -176,31 +229,50 @@ class _EventReState extends State<EventRe> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.all(10),
-          child: TextField(
-            onChanged: searchevent,
-            decoration: InputDecoration(
-                hintText: 'Event name',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Colors.black))),
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/bg.jpg"),
+          fit: BoxFit.cover,
         ),
-        Expanded(
-            child: ListView.builder(
-                itemCount: eventss.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(eventss[index]),
-                    trailing: Icon(Icons.arrow_forward_ios),
-                  );
-                })),
-      ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.all(10),
+            child: TextField(
+              onChanged: searchevent,
+              decoration: InputDecoration(
+                  hintText: 'Event name',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.white))),
+            ),
+          ),
+          Expanded(
+              child: ListView.builder(
+                  itemCount: eventss.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        eventss[index],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 20),
+                      ),
+                      trailing: Icon(Icons.arrow_forward_ios),
+                    );
+                  })),
+        ],
+      ),
     );
   }
+}
+
+class A {
+  late String username;
+  late String id;
+
+  A(this.username, this.id);
 }
 
 class OrgRe extends StatefulWidget {
@@ -211,7 +283,7 @@ class OrgRe extends StatefulWidget {
 }
 
 class _OrgReState extends State<OrgRe> {
-  List<String> events = [
+  /*List<String> events = [
     "MACE",
     "IEEE",
     "CODECHEF MACE CHAPTER",
@@ -261,6 +333,167 @@ class _OrgReState extends State<OrgRe> {
                   );
                 })),
       ],
+    );
+  }*/
+  final db = FirebaseFirestore.instance;
+  List po = <Map>[];
+  @override
+  Future<int> stt() async {
+    User? user1 = FirebaseAuth.instance.currentUser;
+    var collection = FirebaseFirestore.instance.collection("organization");
+    var querySnapshot = await collection.get();
+
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      if (data['username'] == user1!.email) {
+        a = data['name'];
+        print(a);
+      }
+    }
+
+    return 1;
+  }
+
+  Future<int> st() async {
+    User? user1 = FirebaseAuth.instance.currentUser;
+
+    await stt();
+    //pendingmembers
+    dynamic aaa = await FirebaseFirestore.instance
+        .collection("organization")
+        .doc(a)
+        .get();
+    po = [];
+
+    for (var query in aaa.data()['pendingmembers']) {
+      print(query);
+      //A a = A(query['username'], query['id']);
+      po.add({"username": query['username'], 'id': query['id']});
+    }
+    print(po.length);
+    return 1;
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/bg.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: FutureBuilder(
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("images/bg.jpg"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: ListView.builder(
+                    itemCount: po.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                          child: ListTile(
+                        title: Row(
+                          children: [
+                            Text(po[index]["username"]),
+                            //
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    print(po);
+                                  });
+
+                                  FirebaseFirestore.instance
+                                      .collection("organization")
+                                      .doc(a)
+                                      .update({
+                                    "approvedmembers": FieldValue.arrayUnion([
+                                      {
+                                        "username": po[index]["username"],
+                                        "id": po[index]["id"]
+                                      }
+                                    ])
+                                  });
+                                  FirebaseFirestore.instance
+                                      .collection("user")
+                                      .doc(po[index]["username"])
+                                      .update({
+                                    "organizations": FieldValue.arrayUnion([a])
+                                  });
+                                  // FirebaseFirestore.instance
+                                  //     .collection("organization")
+                                  //     .doc(a)
+                                  //     .update({
+                                  // "pendingmembers": FieldValue.arrayRemove([
+                                  //   {"username": po[index]["username"],
+                                  //       "id": po[index]["id"]}
+                                  // ])
+                                  // });
+                                  FirebaseFirestore.instance
+                                      .collection("organization")
+                                      .doc(a)
+                                      .update({
+                                    "pendingmembers": FieldValue.arrayRemove([
+                                      {
+                                        "username": po[index]["username"],
+                                        "id": po[index]["id"]
+                                      }
+                                    ])
+                                  });
+                                },
+                                icon: Icon(Icons.check)),
+                            IconButton(
+                                onPressed: () {
+                                  FirebaseFirestore.instance
+                                      .collection("organization")
+                                      .doc(a)
+                                      .update({
+                                    "pendingmembers":
+                                        FieldValue.arrayRemove(po[index])
+                                  });
+                                  FirebaseFirestore.instance
+                                      .collection("organization")
+                                      .doc(a)
+                                      .update({
+                                    "deniedmembers":
+                                        FieldValue.arrayUnion(po[index])
+                                  });
+                                },
+                                icon: Icon(Icons.flag)),
+                            IconButton(
+                                onPressed: () {
+                                  FirebaseFirestore.instance
+                                      .collection("organization")
+                                      .doc(a)
+                                      .update({
+                                    "pendingmembers":
+                                        FieldValue.arrayRemove(po[index])
+                                  });
+                                },
+                                icon: Icon(Icons.close)),
+                          ],
+                        ),
+                        subtitle: Text(po[index]["id"]),
+                        // trailing: Row(
+                        //   children: [
+                        //
+                        //   ],
+
+                        // )
+                      ));
+                    }),
+              );
+            }
+          }),
+          future: st()),
     );
   }
 }

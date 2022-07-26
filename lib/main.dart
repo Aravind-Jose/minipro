@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:eventnoti/pages/aa.dart';
 import 'package:eventnoti/pages/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -34,7 +38,36 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Login(),
+      home: Ads(),
+    );
+  }
+}
+
+class Ads extends StatefulWidget {
+  const Ads({Key? key}) : super(key: key);
+
+  @override
+  State<Ads> createState() => _AdsState();
+}
+
+class _AdsState extends State<Ads> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+        const Duration(seconds: 0),
+        () => Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Login())));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'images/msg.jpg',
+      fit: BoxFit.fill,
+      height: double.infinity,
+      width: double.infinity,
+      alignment: Alignment.center,
     );
   }
 }
