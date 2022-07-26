@@ -475,131 +475,78 @@ class _ListviewState extends State<Listview> {
                         if (d1.compareTo(d2) > 0 &&
                             data['category'] == widget.cate &&
                             data['region'] != "Exclusive") {
-                          return GestureDetector(
-                            onTap: (() {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  content: Column(
-                                    children: [
-                                      //Image.network(data['url']),
-                                      Row(
-                                        children: [
-                                          Text("Name"),
-                                          Text(data['name'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Conductucted by"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Start date"),
-                                          Text(data['startDate'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Starting time"),
-                                          Text(data['startTime'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Organization name"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      // Row(children: [Text(""),Text(data[''])],),
-                                    ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                      child: const Text("Okay"),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            child: Card(
-                              child: ListTile(
-                                leading: ElevatedButton(
-                                    onPressed: () {
-                                      if (buttontxt['${data['name']}'] ==
-                                          "Register") {
-                                        setState(() {
-                                          buttontxt['${data['name']}'] =
-                                              "Registered";
-                                          if (data['participants'] == null) {
-                                            liss = [];
-                                          } else {
-                                            print("Not null");
-                                            liss =
-                                                List.from(data['participants']);
-                                          }
-                                          liss.add(user!.email);
-                                          CollectionReference users =
-                                              FirebaseFirestore.instance
-                                                  .collection('events');
-                                          users.doc('${data['name']}').update({
-                                            'participants': liss,
-                                          });
-                                          liss1.add(data['name']);
-                                          CollectionReference users2 =
-                                              FirebaseFirestore.instance
-                                                  .collection('user');
-                                          users2.doc('${user!.email}').update({
-                                            'regEvents': liss1,
-                                          });
-                                        });
-                                      }
-                                    },
-                                    child: Text(buttontxt['${data['name']}'])),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    color: details['${data['name']}'] == "red"
-                                        ? Colors.red
-                                        : Colors.grey,
-                                  ),
-                                  onPressed: () async {
-                                    setState(() {
-                                      details['${data['name']}'] =
-                                          details['${data['name']}'] == "red"
-                                              ? "grey"
-                                              : "red";
-                                      final User? user =
-                                          FirebaseAuth.instance.currentUser;
-                                      print(user!.uid);
-                                      if (details['${data['name']}'] == "red") {
-                                        widget.lis.add(data['name']);
+                          return Card(
+                            child: ListTile(
+                              leading: ElevatedButton(
+                                  onPressed: () {
+                                    if (buttontxt['${data['name']}'] ==
+                                        "Register") {
+                                      setState(() {
+                                        buttontxt['${data['name']}'] =
+                                            "Registered";
+                                        if (data['participants'] == null) {
+                                          liss = [];
+                                        } else {
+                                          print("Not null");
+                                          liss =
+                                              List.from(data['participants']);
+                                        }
+                                        liss.add(user!.email);
                                         CollectionReference users =
                                             FirebaseFirestore.instance
-                                                .collection('user');
-                                        users.doc(user.email).update({
-                                          'favourite': widget.lis,
+                                                .collection('events');
+                                        users.doc('${data['name']}').update({
+                                          'participants': liss,
                                         });
-                                      } else {
-                                        widget.lis.remove(data['name']);
-                                        CollectionReference users =
+                                        liss1.add(data['name']);
+                                        CollectionReference users2 =
                                             FirebaseFirestore.instance
                                                 .collection('user');
-                                        users.doc(user.email).update({
-                                          'favourite': widget.lis,
+                                        users2.doc('${user!.email}').update({
+                                          'regEvents': liss1,
                                         });
-                                      }
-                                    });
+                                      });
+                                    }
                                   },
+                                  child: Text(buttontxt['${data['name']}'])),
+                              trailing: IconButton(
+                                icon: Icon(
+                                  Icons.favorite,
+                                  color: details['${data['name']}'] == "red"
+                                      ? Colors.red
+                                      : Colors.grey,
                                 ),
-                                title: Text(data['name'].toString()),
-                                subtitle: Text(data['description'].toString()),
+                                onPressed: () async {
+                                  setState(() {
+                                    details['${data['name']}'] =
+                                        details['${data['name']}'] == "red"
+                                            ? "grey"
+                                            : "red";
+                                    final User? user =
+                                        FirebaseAuth.instance.currentUser;
+                                    print(user!.uid);
+                                    if (details['${data['name']}'] == "red") {
+                                      widget.lis.add(data['name']);
+                                      CollectionReference users =
+                                          FirebaseFirestore.instance
+                                              .collection('user');
+                                      users.doc(user.email).update({
+                                        'favourite': widget.lis,
+                                      });
+                                    } else {
+                                      widget.lis.remove(data['name']);
+                                      CollectionReference users =
+                                          FirebaseFirestore.instance
+                                              .collection('user');
+                                      users.doc(user.email).update({
+                                        'favourite': widget.lis,
+                                      });
+                                    }
+                                  });
+                                },
                               ),
+                              title: Text(data['name'].toString()),
+                              subtitle: Text(data['description'].toString()),
                             ),
                           );
                         }
