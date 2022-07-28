@@ -27,7 +27,7 @@ class _SignuppageUserState extends State<SignuppageUser> {
   TextEditingController password = TextEditingController();
   TextEditingController name = TextEditingController();
   dynamic val = [false, false, false];
-  dynamic interests = ["Coding", "Arts", "Webinar"];
+  dynamic interests = ["Coding", "Arts", "Sports"];
 
   @override
   _getFromGallery() async {
@@ -76,14 +76,14 @@ class _SignuppageUserState extends State<SignuppageUser> {
                 con: email,
               ),
               SizedBox(
-                height: 20,
+                height: 18,
               ),
               FormFieldCus(
                 name: "Password",
                 con: password,
               ),
               SizedBox(
-                height: 20,
+                height: 18,
               ),
               FormFieldCus(
                 name: "Name",
@@ -113,7 +113,7 @@ class _SignuppageUserState extends State<SignuppageUser> {
                           });
                         }),
                     CheckboxListTile(
-                        title: Text("Webinar"),
+                        title: Text("Sports"),
                         value: val[2],
                         onChanged: (value) {
                           setState(() {

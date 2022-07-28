@@ -109,206 +109,240 @@ class _CreateEventState extends State<CreateEvent> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("images/bg.jpg"),
-              fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("images/bg.jpg"),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          padding: EdgeInsets.all(10),
-          //color: Color.fromARGB(255, 187, 179, 179),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "Mode",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Radio(
-                      value: "online",
-                      groupValue: type,
-                      onChanged: (value) {
-                        setState(() {
-                          type = value.toString();
-                        });
-                      }),
-                  Text(
-                    "Online",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(
-                    width: 50,
-                  ),
-                  Radio(
-                      //MaterialStateProperty.all<Color>(Colors.white)
-                      //hoverColor: Colors.white,
-                      value: "Offline",
-                      groupValue: type,
-                      onChanged: (value) {
-                        setState(() {
-                          type = value.toString();
-                        });
-                      }),
-                  Text(
-                    "Offline",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text("Start Date"),
-                  IconButton(
-                      onPressed: () {
-                        _selectDate(context);
-                      },
-                      icon: Icon(Icons.edit_calendar_outlined)),
-                  Text(
-                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text("End Date"),
-                  IconButton(
-                      onPressed: () {
-                        _selectDate1(context);
-                      },
-                      icon: Icon(Icons.edit_calendar_outlined)),
-                  Text(
-                      "${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}")
-                ],
-              ),
-              Row(
-                children: [
-                  Text("Start Time"),
-                  selectedTime.hour == 24 && selectedTime.minute == 47
-                      ? ElevatedButton(
-                          onPressed: () {
-                            _selectTime(context);
-                          },
-                          child: Text("Choose Time"),
-                        )
-                      : Text("${selectedTime.hour}:${selectedTime.minute}"),
-                ],
-              ),
-              FormFieldCus(
-                name: "Event Name",
-                con: name,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FormFieldCus(
-                name: "Description",
-                con: des,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text("Region"),
-                      )),
-                  Expanded(
-                    child: DropDownButtonCus(
-                      type: "1",
+            padding: EdgeInsets.all(10),
+            //color: Color.fromARGB(255, 187, 179, 179),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Radio(
+                        value: "online",
+                        groupValue: type,
+                        onChanged: (value) {
+                          setState(() {
+                            type = value.toString();
+                          });
+                        }),
+                    Text(
+                      "Online",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    flex: 3,
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text("Category"),
-                      )),
-                  Expanded(
-                    child: DropDownButtonCus(
-                      type: "2",
+                    SizedBox(
+                      width: 50,
                     ),
-                    flex: 3,
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Text("Image"),
-                      )),
-                  Expanded(
-                    child: ImageUploads(cat: "events", name: name.text),
-                    flex: 3,
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                  onPressed: (() async {
-                    final orgdata = FirebaseFirestore.instance
-                        .collection("events")
-                        .doc(name.text);
-                    final User? user = FirebaseAuth.instance.currentUser;
-                    print(user!.email);
-                    var collection =
-                        FirebaseFirestore.instance.collection("organization");
-                    var querySnapshot = await collection.get();
-                    for (var queryDocumentSnapshot in querySnapshot.docs) {
-                      Map<String, dynamic> data = queryDocumentSnapshot.data();
-                      name_us = data['name'];
-                      us = data['username'];
-                      print(us + " ss" + name_us);
-                      if (us == user.email) {
-                        break;
+                    Radio(
+                        //MaterialStateProperty.all<Color>(Colors.white)
+                        //hoverColor: Colors.white,
+                        value: "Offline",
+                        groupValue: type,
+                        onChanged: (value) {
+                          setState(() {
+                            type = value.toString();
+                          });
+                        }),
+                    Text(
+                      "Offline",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Start",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(child: SizedBox()),
+                    IconButton(
+                        onPressed: () {
+                          _selectDate(context);
+                        },
+                        icon: Icon(Icons.edit_calendar_outlined)),
+                    Text(
+                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "End",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(child: SizedBox()),
+                    IconButton(
+                        onPressed: () {
+                          _selectDate1(context);
+                        },
+                        icon: Icon(Icons.edit_calendar_outlined)),
+                    Text(
+                      "${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Commencement Time",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _selectTime(context);
+                      },
+                      child: Icon(
+                        Icons.lock_clock_outlined,
+                      ),
+                    ),
+                    Text(
+                      "${selectedTime.hour}:${selectedTime.minute}",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                FormFieldCus(
+                  name: "Event Name",
+                  con: name,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                FormFieldCus(
+                  name: "Description",
+                  con: des,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                          child: Text("Region"),
+                        )),
+                    Expanded(
+                      child: DropDownButtonCus(
+                        type: "1",
+                      ),
+                      flex: 3,
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                          child: Text("Category"),
+                        )),
+                    Expanded(
+                      child: DropDownButtonCus(
+                        type: "2",
+                      ),
+                      flex: 3,
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                          child: Text("Image"),
+                        )),
+                    Expanded(
+                      child: ImageUploads(cat: "events", name: name.text),
+                      flex: 3,
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    onPressed: (() async {
+                      final orgdata = FirebaseFirestore.instance
+                          .collection("events")
+                          .doc(name.text);
+                      final User? user = FirebaseAuth.instance.currentUser;
+                      print(user!.email);
+                      var collection =
+                          FirebaseFirestore.instance.collection("organization");
+                      var querySnapshot = await collection.get();
+                      for (var queryDocumentSnapshot in querySnapshot.docs) {
+                        Map<String, dynamic> data =
+                            queryDocumentSnapshot.data();
+                        name_us = data['name'];
+                        us = data['username'];
+                        print(us + " ss" + name_us);
+                        if (us == user.email) {
+                          break;
+                        }
                       }
-                    }
-                    int scor = 0;
-                    if ((DropDownButtonCus.selectedValue == "IIT" ||
-                            DropDownButtonCus.selectedValue == "NIT") &&
-                        type == "online") {
-                      scor = 4;
-                    } else if ((DropDownButtonCus.selectedValue == "IIT" ||
-                            DropDownButtonCus.selectedValue == "NIT") &&
-                        type == "offline") {
-                      scor = 3;
-                    } else if (type == "online") {
-                      scor = 2;
-                    } else if (type == "offline") {
-                      scor = 1;
-                    }
-                    final json = {
-                      //'id': orgdata.id,
-                      'name': name.text,
-                      'organizationname': name_us,
-                      'description': des.text,
-                      'region': DropDownButtonCus.selectedValue,
-                      'category': DropDownButtonCus.selectedValue2,
-                      'startDate':
-                          DateFormat('yyyy-MM-dd').format(selectedDate),
-                      'endDate': DateFormat('yyyy-MM-dd').format(selectedDate1),
-                      'startTime': selectedTime.hour.toString() +
-                          ":" +
-                          selectedTime.minute.toString(),
-                      'username': us,
-                      'url': ImageUploads.url,
-                      'type': type,
-                      'score': scor,
-                    };
-                    orgdata.set(json);
-                    Get.to(HomePageOrg());
-                  }),
-                  child: Text("Create Event")),
-            ],
+                      int scor = 0;
+                      if ((DropDownButtonCus.selectedValue == "IIT" ||
+                              DropDownButtonCus.selectedValue == "NIT") &&
+                          type == "online") {
+                        scor = 4;
+                      } else if ((DropDownButtonCus.selectedValue == "IIT" ||
+                              DropDownButtonCus.selectedValue == "NIT") &&
+                          type == "offline") {
+                        scor = 3;
+                      } else if (type == "online") {
+                        scor = 2;
+                      } else if (type == "offline") {
+                        scor = 1;
+                      }
+                      final json = {
+                        //'id': orgdata.id,
+                        'name': name.text,
+                        'organizationname': name_us,
+                        'description': des.text,
+                        'region': DropDownButtonCus.selectedValue,
+                        'category': DropDownButtonCus.selectedValue2,
+                        'startDate':
+                            DateFormat('yyyy-MM-dd').format(selectedDate),
+                        'endDate':
+                            DateFormat('yyyy-MM-dd').format(selectedDate1),
+                        'startTime': selectedTime.hour.toString() +
+                            ":" +
+                            selectedTime.minute.toString(),
+                        'username': us,
+                        'url': ImageUploads.url,
+                        'type': type,
+                        'score': scor,
+                      };
+                      orgdata.set(json);
+                      Get.to(HomePageOrg());
+                    }),
+                    child: Text("Create Event")),
+              ],
+            ),
           ),
         ),
       ),

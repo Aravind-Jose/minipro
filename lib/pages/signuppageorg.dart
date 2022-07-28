@@ -78,7 +78,7 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                 height: 20,
               ),
               FormFieldCus(
-                name: "password",
+                name: "Password",
                 con: password,
               ),
               SizedBox(
@@ -98,24 +98,24 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
               SizedBox(
                 height: 20,
               ),
-              Row(
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Container(
-                        child: Text("Region",
-                            style: TextStyle(
-                              fontSize: 20,
-                            )),
-                      )),
-                  Expanded(
-                    child: DropDownButtonCus(
-                      type: "1",
-                    ),
-                    flex: 2,
-                  )
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //         flex: 2,
+              //         child: Container(
+              //           child: Text("Region",
+              //               style: TextStyle(
+              //                 fontSize: 20,
+              //               )),
+              //         )),
+              //     Expanded(
+              //       child: DropDownButtonCus(
+              //         type: "1",
+              //       ),
+              //       flex: 2,
+              //     )
+              //   ],
+              // ),
               SizedBox(
                 height: 25,
               ),

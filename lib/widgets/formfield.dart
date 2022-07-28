@@ -37,7 +37,7 @@ class _FormFieldCusState extends State<FormFieldCus> {
               //   });
               // },
               controller: widget.con,
-              obscureText: widget.name == "password" ? true : false,
+              obscureText: widget.name == "Password" ? true : false,
               // keyboardType: name == "Description"
               //     ? TextInputType.multiline
               //     : TextInputType.text,

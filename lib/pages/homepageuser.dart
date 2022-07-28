@@ -14,7 +14,7 @@ class HomePageUser extends StatefulWidget {
     true,
   ];
   const HomePageUser({Key? key}) : super(key: key);
-  static String ne = "Switch to old";
+  static String ne = "Try something new";
   @override
   State<HomePageUser> createState() => _HomePageUserState();
 }
@@ -261,6 +261,7 @@ class _DashboarduserState extends State<Dashboarduser> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage("images/bg.jpg"),
@@ -274,6 +275,8 @@ class _DashboarduserState extends State<Dashboarduser> {
                   children: [
                     Text(
                       "Coding",
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -291,6 +294,8 @@ class _DashboarduserState extends State<Dashboarduser> {
                   children: [
                     Text(
                       "Arts",
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -308,6 +313,8 @@ class _DashboarduserState extends State<Dashboarduser> {
                   children: [
                     Text(
                       "Sports",
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
                   ],
@@ -476,77 +483,80 @@ class _ListviewState extends State<Listview> {
                             data['category'] == widget.cate &&
                             data['region'] != "Exclusive") {
                           return Card(
-                            child: ListTile(
-                              leading: ElevatedButton(
-                                  onPressed: () {
-                                    if (buttontxt['${data['name']}'] ==
-                                        "Register") {
-                                      setState(() {
-                                        buttontxt['${data['name']}'] =
-                                            "Registered";
-                                        if (data['participants'] == null) {
-                                          liss = [];
-                                        } else {
-                                          print("Not null");
-                                          liss =
-                                              List.from(data['participants']);
-                                        }
-                                        liss.add(user!.email);
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: ListTile(
+                                leading: ElevatedButton(
+                                    onPressed: () {
+                                      if (buttontxt['${data['name']}'] ==
+                                          "Register") {
+                                        setState(() {
+                                          buttontxt['${data['name']}'] =
+                                              "Registered";
+                                          if (data['participants'] == null) {
+                                            liss = [];
+                                          } else {
+                                            print("Not null");
+                                            liss =
+                                                List.from(data['participants']);
+                                          }
+                                          liss.add(user!.email);
+                                          CollectionReference users =
+                                              FirebaseFirestore.instance
+                                                  .collection('events');
+                                          users.doc('${data['name']}').update({
+                                            'participants': liss,
+                                          });
+                                          liss1.add(data['name']);
+                                          CollectionReference users2 =
+                                              FirebaseFirestore.instance
+                                                  .collection('user');
+                                          users2.doc('${user!.email}').update({
+                                            'regEvents': liss1,
+                                          });
+                                        });
+                                      }
+                                    },
+                                    child: Text(buttontxt['${data['name']}'])),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    Icons.favorite,
+                                    color: details['${data['name']}'] == "red"
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      details['${data['name']}'] =
+                                          details['${data['name']}'] == "red"
+                                              ? "grey"
+                                              : "red";
+                                      final User? user =
+                                          FirebaseAuth.instance.currentUser;
+                                      print(user!.uid);
+                                      if (details['${data['name']}'] == "red") {
+                                        widget.lis.add(data['name']);
                                         CollectionReference users =
                                             FirebaseFirestore.instance
-                                                .collection('events');
-                                        users.doc('${data['name']}').update({
-                                          'participants': liss,
+                                                .collection('user');
+                                        users.doc(user.email).update({
+                                          'favourite': widget.lis,
                                         });
-                                        liss1.add(data['name']);
-                                        CollectionReference users2 =
+                                      } else {
+                                        widget.lis.remove(data['name']);
+                                        CollectionReference users =
                                             FirebaseFirestore.instance
                                                 .collection('user');
-                                        users2.doc('${user!.email}').update({
-                                          'regEvents': liss1,
+                                        users.doc(user.email).update({
+                                          'favourite': widget.lis,
                                         });
-                                      });
-                                    }
+                                      }
+                                    });
                                   },
-                                  child: Text(buttontxt['${data['name']}'])),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.favorite,
-                                  color: details['${data['name']}'] == "red"
-                                      ? Colors.red
-                                      : Colors.grey,
                                 ),
-                                onPressed: () async {
-                                  setState(() {
-                                    details['${data['name']}'] =
-                                        details['${data['name']}'] == "red"
-                                            ? "grey"
-                                            : "red";
-                                    final User? user =
-                                        FirebaseAuth.instance.currentUser;
-                                    print(user!.uid);
-                                    if (details['${data['name']}'] == "red") {
-                                      widget.lis.add(data['name']);
-                                      CollectionReference users =
-                                          FirebaseFirestore.instance
-                                              .collection('user');
-                                      users.doc(user.email).update({
-                                        'favourite': widget.lis,
-                                      });
-                                    } else {
-                                      widget.lis.remove(data['name']);
-                                      CollectionReference users =
-                                          FirebaseFirestore.instance
-                                              .collection('user');
-                                      users.doc(user.email).update({
-                                        'favourite': widget.lis,
-                                      });
-                                    }
-                                  });
-                                },
+                                title: Text(data['name'].toString()),
+                                subtitle: Text(data['description'].toString()),
                               ),
-                              title: Text(data['name'].toString()),
-                              subtitle: Text(data['description'].toString()),
                             ),
                           );
                         }
@@ -795,55 +805,56 @@ class _ReclisState extends State<Reclis> {
                             org.contains(data['organizationname'])) {
                           return GestureDetector(
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  content: Column(
-                                    children: [
-                                      Image.network(data['url']),
-                                      Row(
-                                        children: [
-                                          Text("Name"),
-                                          Text(data['name'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Conductucted by"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Start date"),
-                                          Text(data['startDate'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Starting time"),
-                                          Text(data['startTime'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Organization name"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      // Row(children: [Text(""),Text(data[''])],),
-                                    ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                      child: const Text("Okay"),
-                                    ),
-                                  ],
-                                ),
-                              );
+                              Get.to(Eventdet(name: data['name']));
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (ctx) => AlertDialog(
+                              //     content: Column(
+                              //       children: [
+                              //         Image.network(data['url']),
+                              //         Row(
+                              //           children: [
+                              //             Text("Name"),
+                              //             Text(data['name'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Conductucted by"),
+                              //             Text(data['organizationname'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Start date"),
+                              //             Text(data['startDate'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Starting time"),
+                              //             Text(data['startTime'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Organization name"),
+                              //             Text(data['organizationname'])
+                              //           ],
+                              //         ),
+                              //         // Row(children: [Text(""),Text(data[''])],),
+                              //       ],
+                              //     ),
+                              //     actions: <Widget>[
+                              //       TextButton(
+                              //         onPressed: () {
+                              //           Navigator.of(ctx).pop();
+                              //         },
+                              //         child: const Text("Okay"),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // );
                             },
                             child: Card(
                               child: ListTile(
@@ -1064,55 +1075,56 @@ class _ReclisState2 extends State<Reclis2> {
                                     : ints.contains(data['category']))) {
                           return GestureDetector(
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  content: Column(
-                                    children: [
-                                      Image.network(data['url']),
-                                      Row(
-                                        children: [
-                                          Text("Name"),
-                                          Text(data['name'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Conductucted by"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Start date"),
-                                          Text(data['startDate'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Starting time"),
-                                          Text(data['startTime'])
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("Organization name"),
-                                          Text(data['organizationname'])
-                                        ],
-                                      ),
-                                      // Row(children: [Text(""),Text(data[''])],),
-                                    ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                      child: const Text("Okay"),
-                                    ),
-                                  ],
-                                ),
-                              );
+                              Get.to(Eventdet(name: data['name']));
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (ctx) => AlertDialog(
+                              //     content: Column(
+                              //       children: [
+                              //         Image.network(data['url']),
+                              //         Row(
+                              //           children: [
+                              //             Text("Name"),
+                              //             Text(data['name'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Conductucted by"),
+                              //             Text(data['organizationname'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Start date"),
+                              //             Text(data['startDate'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Starting time"),
+                              //             Text(data['startTime'])
+                              //           ],
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text("Organization name"),
+                              //             Text(data['organizationname'])
+                              //           ],
+                              //         ),
+                              //         // Row(children: [Text(""),Text(data[''])],),
+                              //       ],
+                              //     ),
+                              //     actions: <Widget>[
+                              //       TextButton(
+                              //         onPressed: () {
+                              //           Navigator.of(ctx).pop();
+                              //         },
+                              //         child: const Text("Okay"),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // );
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(

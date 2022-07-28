@@ -153,29 +153,45 @@ class _dashboardState extends State<dashboard> {
                   print(user!.email);
                   if (data['username'] == user.email) {
                     a = data['organizationname'];
-                    return Card(
-                      child: ListTile(
-                        // trailing: Expanded(
-                        //   child: Row(
-                        //     children: [
-                        //       Text(data['endDate'].toString()),
-                        //       Text(data['startDate'].toString()),
-                        //     ],
-                        //   ),
-                        // ),
-                        title: Row(
-                          children: [
-                            Text(data['name'].toString()),
-                            Expanded(child: SizedBox()),
-                            Text("Start: ${data['startDate'].toString()}"),
-                          ],
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(data['description'].toString()),
-                            Expanded(child: SizedBox()),
-                            Text("End: ${data['endDate'].toString()}"),
-                          ],
+                    return GestureDetector(
+                      onPanUpdate: (details) async {
+                        // Swiping in right direction.
+                        if (details.delta.dx > 0) {}
+
+                        // Swiping in left direction.
+                        if (details.delta.dx < 0) {
+                          final _db = FirebaseFirestore.instance;
+
+                          await _db
+                              .collection("events")
+                              .doc(data['name'])
+                              .delete();
+                        }
+                      },
+                      child: Card(
+                        child: ListTile(
+                          // trailing: Expanded(
+                          //   child: Row(
+                          //     children: [
+                          //       Text(data['endDate'].toString()),
+                          //       Text(data['startDate'].toString()),
+                          //     ],
+                          //   ),
+                          // ),
+                          title: Row(
+                            children: [
+                              Text(data['name'].toString()),
+                              Expanded(child: SizedBox()),
+                              Text("Start: ${data['startDate'].toString()}"),
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Text(data['description'].toString()),
+                              Expanded(child: SizedBox()),
+                              Text("End: ${data['endDate'].toString()}"),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -345,6 +361,7 @@ class _OrgReState extends State<OrgRe> {
 
     for (var queryDocumentSnapshot in querySnapshot.docs) {
       Map<String, dynamic> data = queryDocumentSnapshot.data();
+      print(user1!.email! + " " + data['username']);
       if (data['username'] == user1!.email) {
         a = data['name'];
         print(a);
@@ -359,6 +376,7 @@ class _OrgReState extends State<OrgRe> {
 
     await stt();
     //pendingmembers
+    print("sda " + a);
     dynamic aaa = await FirebaseFirestore.instance
         .collection("organization")
         .doc(a)

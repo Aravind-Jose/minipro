@@ -37,7 +37,7 @@ class Selectionpage extends StatelessWidget {
                       color: Colors.blue,
                       borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   child: Center(
-                    child: Text("Oraganisation",
+                    child: Text("Organization",
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,

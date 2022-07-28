@@ -20,6 +20,8 @@ class _EventdetState extends State<Eventdet> {
           title: Text("Event Details"),
         ),
         body: Container(
+          padding: EdgeInsets.all(10),
+          height: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage("images/bg.jpg"),
@@ -46,37 +48,129 @@ class _EventdetState extends State<Eventdet> {
                         doc.data() as Map<String, dynamic>?;
 
                     if ( //d1.compareTo(d2) > 0 &&
-                        data!['name'] != widget.name) {
+                        data!['name'] == widget.name) {
                       return Column(
                         children: [
-                          Image.network(data['url']),
-                          Row(
-                            children: [Text("Name"), Text(data['name'])],
+                          Container(
+                            height: 400,
+                            width: 400,
+                            child: Image.network(
+                              data['url'],
+                              fit: BoxFit.fill,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          //Image.network(data['url']),
                           Row(
                             children: [
-                              Text("Conductucted by"),
-                              Text(data['organizationname'])
+                              Text(
+                                "Name",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  width: 20,
+                                ),
+                              ),
+                              Text(
+                                data['name'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              )
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Start date"),
-                              Text(data['startDate'])
+                              Text(
+                                "Organization",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  width: 20,
+                                ),
+                              ),
+                              Text(
+                                data['organizationname'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              )
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Starting time"),
-                              Text(data['startTime'])
+                              Text(
+                                "Start date",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  width: 20,
+                                ),
+                              ),
+                              Text(
+                                data['startDate'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              )
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Organization name"),
-                              Text(data['organizationname'])
+                              Text(
+                                "Starting time",
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  width: 20,
+                                ),
+                              ),
+                              Text(
+                                data['startTime'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE0FBFC)),
+                              )
                             ],
                           ),
+
                           // Row(children: [Text(""),Text(data[''])],),
                         ],
                       );

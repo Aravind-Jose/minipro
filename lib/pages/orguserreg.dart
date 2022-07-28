@@ -83,80 +83,88 @@ class _OrgUserRegState extends State<OrgUserReg> {
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            body: Center(
-              child: Material(
-                elevation: 20,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  height: 200,
-                  width: 200,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            widget.name,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(widget.desc),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        width: 150,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            //fillColor: Colors.orange, filled: true
-                            hintText: "Enter your regno",
-                          ),
-                          controller: regno,
+            body: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Center(
+                child: Material(
+                  elevation: 20,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    height: 200,
+                    width: 200,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              widget.name,
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                          onPressed: buttonText == "Register"
-                              ? () {
-                                  lis.add({
-                                    "username": user!.email,
-                                    "id": regno.text
-                                  });
+                        Row(
+                          children: [
+                            Text(widget.desc),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          width: 150,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              //fillColor: Colors.orange, filled: true
+                              hintText: "Enter your regno",
+                            ),
+                            controller: regno,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                            onPressed: buttonText == "Register"
+                                ? () {
+                                    lis.add({
+                                      "username": user!.email,
+                                      "id": regno.text
+                                    });
 
-                                  /// want to correct the details needed to be added to the database want to add email and registration number
-                                  CollectionReference users1 = FirebaseFirestore
-                                      .instance
-                                      .collection('organization');
-                                  print(lis);
+                                    /// want to correct the details needed to be added to the database want to add email and registration number
+                                    CollectionReference users1 =
+                                        FirebaseFirestore.instance
+                                            .collection('organization');
+                                    print(lis);
 
-                                  users1.doc(widget.name).update({
-                                    'pendingmembers': lis,
-                                  });
-                                  Get.back();
-                                }
-                              : () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      content: Text(res),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(ctx).pop();
-                                          },
-                                          child: const Text("Okay"),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                          child: Text(buttonText))
-                    ],
+                                    users1.doc(widget.name).update({
+                                      'pendingmembers': lis,
+                                    });
+                                    Get.back();
+                                  }
+                                : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        content: Text(res),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(ctx).pop();
+                                            },
+                                            child: const Text("Okay"),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                            child: Text(buttonText))
+                      ],
+                    ),
                   ),
                 ),
               ),

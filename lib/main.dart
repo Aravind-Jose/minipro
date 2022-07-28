@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:eventnoti/books.dart';
 import 'package:eventnoti/pages/aa.dart';
 import 'package:eventnoti/pages/loginpage.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
+import 'newlogin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +41,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Ads(),
+      home: LoginDemo(),
     );
   }
 }
@@ -55,7 +58,7 @@ class _AdsState extends State<Ads> {
   void initState() {
     super.initState();
     Timer(
-        const Duration(seconds: 0),
+        const Duration(seconds: 1),
         () => Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Login())));
   }
