@@ -27,7 +27,7 @@ class _HomePageUserState extends State<HomePageUser>
   final db = FirebaseFirestore.instance;
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 1);
     _tabController.addListener(_handleTabIndex);
   }
 
@@ -38,7 +38,7 @@ class _HomePageUserState extends State<HomePageUser>
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           floatingActionButton: _tabController.index == 1
               ? Container(
@@ -120,6 +120,7 @@ class _HomePageUserState extends State<HomePageUser>
             EventRe(),
             OrgRe(),
             fav(),
+            regeve(),
           ]),
           bottomNavigationBar: BottomAppBar(
             elevation: 100,
@@ -130,7 +131,8 @@ class _HomePageUserState extends State<HomePageUser>
                   Text("List"),
                   Text("Recommendation"),
                   Text("Oranganization"),
-                  Text("Favorites"),
+                  Text("Favourites"),
+                  Text("Reg Events"),
                 ])),
           ),
         ));
@@ -157,7 +159,7 @@ class _favState extends State<fav> {
       Map<String, dynamic> data1 = queryDocumentSnapshot.data();
 
       if (data1['username'] == user!.email) {
-        data1['favourite'] == null
+        data1['favourite'] == []
             ? lis = []
             : lis = List.from(data1['favourite']);
         print(lis);
@@ -211,21 +213,145 @@ class _favState extends State<fav> {
                           if (d1.compareTo(d2) > 0 &&
                               lis.contains(data['name'])) {
                             return Card(
-                              child: ListTile(
-                                title: Row(
-                                  children: [
-                                    Text(data['name'].toString()),
-                                    Expanded(child: SizedBox()),
-                                    Text(
-                                        "Start: ${data['startDate'].toString()}"),
-                                  ],
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.to(Eventdet(
+                                      name: data['name'], login: "user"));
+                                },
+                                child: ListTile(
+                                  title: Row(
+                                    children: [
+                                      Text(data['name'].toString()),
+                                      Expanded(child: SizedBox()),
+                                      Text(
+                                          "Start: ${data['startDate'].toString()}"),
+                                    ],
+                                  ),
+                                  subtitle: Row(
+                                    children: [
+                                      Text(data['description'].toString()),
+                                      Expanded(child: SizedBox()),
+                                      Text(
+                                          "End: ${data['endDate'].toString()}"),
+                                    ],
+                                  ),
                                 ),
-                                subtitle: Row(
-                                  children: [
-                                    Text(data['description'].toString()),
-                                    Expanded(child: SizedBox()),
-                                    Text("End: ${data['endDate'].toString()}"),
-                                  ],
+                              ),
+                            );
+                          }
+                          return Card();
+                        }).toList(),
+                      );
+                  },
+                ),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+          future: st()),
+    );
+  }
+}
+
+class regeve extends StatefulWidget {
+  regeve({Key? key}) : super(key: key);
+
+  @override
+  State<regeve> createState() => _regeveState();
+}
+
+class _regeveState extends State<regeve> {
+  var querySnapshot;
+  var collection;
+  var lis = [];
+  Future<int> st() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    collection = FirebaseFirestore.instance.collection("user");
+    querySnapshot = await collection.get();
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data1 = queryDocumentSnapshot.data();
+
+      if (data1['username'] == user!.email) {
+        data1['regEvents'] == []
+            ? lis = []
+            : lis = List.from(data1['regEvents']);
+        print(lis);
+        break;
+      }
+    }
+    return 1;
+  }
+
+  final db = FirebaseFirestore.instance;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/bg.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: FutureBuilder(
+          builder: ((context, snapshot) {
+            if (snapshot.hasData) {
+              return Container(
+                height: 150,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: db
+                      .collection('events')
+                      .orderBy("startDate", descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else
+                      // ignore: curly_braces_in_flow_control_structures
+                      return ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: snapshot.data!.docs.map((doc) {
+                          Map<String, dynamic>? data =
+                              doc.data() as Map<String, dynamic>?;
+                          DateTime d1 = DateTime.parse(data!['endDate']);
+                          DateTime now = new DateTime.now();
+                          DateTime d2 =
+                              new DateTime(now.year, now.month, now.day);
+
+                          print("sasd : " + data['name']);
+                          print("lis :" + lis.toString());
+                          print("co :" + lis.contains(data['name']).toString());
+                          if (d1.compareTo(d2) > 0 &&
+                              lis.contains(data['name'])) {
+                            return Card(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.to(Eventdet(
+                                      name: data['name'], login: "reguser"));
+                                },
+                                child: ListTile(
+                                  title: Row(
+                                    children: [
+                                      Text(data['name'].toString()),
+                                      Expanded(child: SizedBox()),
+                                      Text(
+                                          "Start: ${data['startDate'].toString()}"),
+                                    ],
+                                  ),
+                                  subtitle: Row(
+                                    children: [
+                                      Text(data['description'].toString()),
+                                      Expanded(child: SizedBox()),
+                                      Text(
+                                          "End: ${data['endDate'].toString()}"),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -481,10 +607,14 @@ class _ListviewState extends State<Listview> {
                             new DateTime(now.year, now.month, now.day);
                         if (d1.compareTo(d2) > 0 &&
                             data['category'] == widget.cate &&
-                            data['region'] != "Exclusive") {
+                            data['region'] != "Exclusive" &&
+                            buttontxt['${data['name']}'] != "Registered") {
                           return Card(
                             child: GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(Eventdet(
+                                    name: data['name'], login: "user"));
+                              },
                               child: ListTile(
                                 leading: ElevatedButton(
                                     onPressed: () {
@@ -802,10 +932,14 @@ class _ReclisState extends State<Reclis> {
                         if (d1.compareTo(d2) > 0 &&
                             data['region'] == widget.cate &&
                             ints.contains(data['category']) &&
-                            org.contains(data['organizationname'])) {
+                            org.contains(data['organizationname']) &&
+                            buttontxt['${data['name']}'] != "Registered") {
                           return GestureDetector(
                             onTap: () {
-                              Get.to(Eventdet(name: data['name']));
+                              Get.to(Eventdet(
+                                name: data['name'],
+                                login: "list",
+                              ));
                               // showDialog(
                               //   context: context,
                               //   builder: (ctx) => AlertDialog(
@@ -962,25 +1096,17 @@ class Reclis2 extends StatefulWidget {
 class _ReclisState2 extends State<Reclis2> {
   var details = new Map();
   var buttontxt = new Map();
-  //var excl=new Map();
-  var liss = [];
-  var liss1 = [];
-  var ints = [];
-  var org = [];
+  var liss = [],liss1 = [],ints = [],org = [];
   final User? user = FirebaseAuth.instance.currentUser;
   String buttext = "Register";
   Future<int> st() async {
-    //final User? user = FirebaseAuth.instance.currentUser;
     var querySnapshot1;
     var collection1;
-
     collection1 = FirebaseFirestore.instance.collection("user");
     querySnapshot1 = await collection1.get();
     for (var queryDocumentSnapshot in querySnapshot1.docs) {
       Map<String, dynamic> data1 = queryDocumentSnapshot.data();
-
       if (data1['username'] == user!.email) {
-        //print(data1['favorites'].length);
         if (data1['interests'] != null) {
           ints = List.from(data1['interests']);
         }
@@ -999,12 +1125,6 @@ class _ReclisState2 extends State<Reclis2> {
         } else {
           liss1 = List.from(data1['regEvents']);
         }
-        // if (data1['participants'] == null) {
-        //   widget.regeve = [];
-        // } else {
-        //   widget.regeve = List.from(data1['favorites']);
-        // }
-        //print(lis.isEmpty);
         break;
       }
     }
@@ -1036,7 +1156,6 @@ class _ReclisState2 extends State<Reclis2> {
         buttontxt['${data['name']}'] = "Register";
       }
     }
-
     return 1;
   }
 
@@ -1072,66 +1191,14 @@ class _ReclisState2 extends State<Reclis2> {
                             data['region'] != 'Exclusive' &&
                                 (widget.cate == "new"
                                     ? !(ints.contains(data['category']))
-                                    : ints.contains(data['category']))) {
+                                    : ints.contains(data['category'])) &&
+                                buttontxt['${data['name']}'] != "Registered") {
                           return GestureDetector(
                             onTap: () {
-                              Get.to(Eventdet(name: data['name']));
-                              // showDialog(
-                              //   context: context,
-                              //   builder: (ctx) => AlertDialog(
-                              //     content: Column(
-                              //       children: [
-                              //         Image.network(data['url']),
-                              //         Row(
-                              //           children: [
-                              //             Text("Name"),
-                              //             Text(data['name'])
-                              //           ],
-                              //         ),
-                              //         Row(
-                              //           children: [
-                              //             Text("Conductucted by"),
-                              //             Text(data['organizationname'])
-                              //           ],
-                              //         ),
-                              //         Row(
-                              //           children: [
-                              //             Text("Start date"),
-                              //             Text(data['startDate'])
-                              //           ],
-                              //         ),
-                              //         Row(
-                              //           children: [
-                              //             Text("Starting time"),
-                              //             Text(data['startTime'])
-                              //           ],
-                              //         ),
-                              //         Row(
-                              //           children: [
-                              //             Text("Organization name"),
-                              //             Text(data['organizationname'])
-                              //           ],
-                              //         ),
-                              //         // Row(children: [Text(""),Text(data[''])],),
-                              //       ],
-                              //     ),
-                              //     actions: <Widget>[
-                              //       TextButton(
-                              //         onPressed: () {
-                              //           Navigator.of(ctx).pop();
-                              //         },
-                              //         child: const Text("Okay"),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // );
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           Eventdet(name: data['name'])),
-                              // );
-                              // Get.to(Eventdet(name: data['name']));
+                              Get.to(Eventdet(
+                                name: data['name'],
+                                login: "list",
+                              ));
                             },
                             child: Card(
                               child: ListTile(

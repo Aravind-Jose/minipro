@@ -28,7 +28,10 @@ class _FormFieldCusState extends State<FormFieldCus> {
           height: 10,
         ),
         Container(
-          height: widget.name == "Description" ? 100 : 50,
+          height: widget.name == "Description" ||
+                  widget.name == "Exclusive details of event"
+              ? 100
+              : 50,
           child: Center(
             child: TextFormField(
               // onChanged: (value) {
@@ -41,7 +44,10 @@ class _FormFieldCusState extends State<FormFieldCus> {
               // keyboardType: name == "Description"
               //     ? TextInputType.multiline
               //     : TextInputType.text,
-              maxLines: widget.name == "Description" ? 5 : 1,
+              maxLines: widget.name == "Description" ||
+                      widget.name == "Exclusive details of event"
+                  ? 5
+                  : 1,
               // scrollPadding: EdgeInsets.all(0),
               validator: (val) {
                 if (val!.isEmpty) {

@@ -30,6 +30,7 @@ class _CreateEventState extends State<CreateEvent> {
   TextEditingController name = TextEditingController();
   TextEditingController des = TextEditingController();
   TextEditingController time = TextEditingController();
+  TextEditingController ades = TextEditingController();
   String? type;
   String date = "";
   DateTime selectedDate = DateTime.now();
@@ -209,6 +210,9 @@ class _CreateEventState extends State<CreateEvent> {
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(
+                      width: 20,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         _selectTime(context);
@@ -216,6 +220,9 @@ class _CreateEventState extends State<CreateEvent> {
                       child: Icon(
                         Icons.lock_clock_outlined,
                       ),
+                    ),
+                    SizedBox(
+                      width: 10,
                     ),
                     Text(
                       "${selectedTime.hour}:${selectedTime.minute}",
@@ -238,12 +245,22 @@ class _CreateEventState extends State<CreateEvent> {
                 SizedBox(
                   height: 20,
                 ),
+                FormFieldCus(con: ades, name: "Exclusive details of event"),
+                SizedBox(
+                  height: 20,
+                ),
                 Row(
                   children: [
                     Expanded(
                         flex: 1,
                         child: Container(
-                          child: Text("Region"),
+                          child: Text(
+                            "Region",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
                         )),
                     Expanded(
                       child: DropDownButtonCus(
@@ -253,12 +270,21 @@ class _CreateEventState extends State<CreateEvent> {
                     )
                   ],
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 Row(
                   children: [
                     Expanded(
                         flex: 1,
                         child: Container(
-                          child: Text("Category"),
+                          child: Text(
+                            "Category",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
                         )),
                     Expanded(
                       child: DropDownButtonCus(
@@ -268,12 +294,21 @@ class _CreateEventState extends State<CreateEvent> {
                     )
                   ],
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 Row(
                   children: [
                     Expanded(
                         flex: 1,
                         child: Container(
-                          child: Text("Image"),
+                          child: Text(
+                            "Image",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
                         )),
                     Expanded(
                       child: ImageUploads(cat: "events", name: name.text),
@@ -285,6 +320,14 @@ class _CreateEventState extends State<CreateEvent> {
                   height: 20,
                 ),
                 ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ))),
                     onPressed: (() async {
                       final orgdata = FirebaseFirestore.instance
                           .collection("events")
@@ -335,12 +378,19 @@ class _CreateEventState extends State<CreateEvent> {
                         'username': us,
                         'url': ImageUploads.url,
                         'type': type,
+                        'ades': ades.text,
                         'score': scor,
                       };
                       orgdata.set(json);
                       Get.to(HomePageOrg());
                     }),
-                    child: Text("Create Event")),
+                    child: Text(
+                      "Create Event",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    )),
               ],
             ),
           ),

@@ -98,24 +98,6 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
               SizedBox(
                 height: 20,
               ),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //         flex: 2,
-              //         child: Container(
-              //           child: Text("Region",
-              //               style: TextStyle(
-              //                 fontSize: 20,
-              //               )),
-              //         )),
-              //     Expanded(
-              //       child: DropDownButtonCus(
-              //         type: "1",
-              //       ),
-              //       flex: 2,
-              //     )
-              //   ],
-              // ),
               SizedBox(
                 height: 25,
               ),
@@ -129,43 +111,6 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                               fontSize: 20,
                             )),
                       )),
-                  // Expanded(
-                  //   child: Center(
-                  //       child: imageFile == null
-                  //           ? Column(
-                  //               mainAxisAlignment: MainAxisAlignment.center,
-                  //               children: <Widget>[
-                  //                 RaisedButton(
-                  //                   color: Colors.greenAccent,
-                  //                   onPressed: () {
-                  //                     _getFromGallery();
-                  //                     //Navigator.pop(context);
-                  //                   },
-                  //                   child: Text("PICK FROM GALLERY"),
-                  //                 ),
-                  //                 Container(
-                  //                   height: 20.0,
-                  //                 ),
-                  //                 RaisedButton(
-                  //                   color: Colors.lightGreenAccent,
-                  //                   onPressed: () {
-                  //                     _getFromCamera();
-                  //                     //Navigator.pop(context);
-                  //                   },
-                  //                   child: Text("PICK FROM CAMERA"),
-                  //                 )
-                  //               ],
-                  //             )
-                  //           : Container(
-                  //               height: 100,
-                  //               width: 100,
-                  //               child: Image.file(
-                  //                 imageFile!,
-                  //                 fit: BoxFit.cover,
-                  //               ),
-                  //             )),
-                  //   flex: 3,
-                  // )
                   Expanded(
                       child: ImageUploads(
                     name: name.text,
@@ -201,7 +146,6 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                             .collection("organization")
                             .doc(name.text);
                         final json = {
-                          //'id': orgdata.id,
                           'name': name.text,
                           'username': email.text,
                           'description': des.text,
@@ -216,9 +160,54 @@ class _SignuppageOrgState extends State<SignuppageOrg> {
                         Get.to(Login());
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              content: const Text(
+                                  "The password provided is too weak"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("Okay"),
+                                ),
+                              ],
+                            ),
+                          );
                           print('The password provided is too weak.');
                         } else if (e.code == 'email-already-in-use') {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              content: const Text(
+                                  "The account already exists for that email"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("Okay"),
+                                ),
+                              ],
+                            ),
+                          );
                           print('The account already exists for that email.');
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              content: Text(e.code),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("Okay"),
+                                ),
+                              ],
+                            ),
+                          );
                         }
                       } catch (e) {
                         print(e);

@@ -255,8 +255,37 @@ class _LoginState extends State<Login> {
                       }
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            content: const Text("No user found for that email"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                                child: const Text("Okay"),
+                              ),
+                            ],
+                          ),
+                        );
                         print('No user found for that email.');
                       } else if (e.code == 'wrong-password') {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            content: const Text(
+                                "Wrong password provided for that user"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                                child: const Text("Okay"),
+                              ),
+                            ],
+                          ),
+                        );
                         print('Wrong password provided for that user.');
                       }
                     }
@@ -293,12 +322,6 @@ class _LoginState extends State<Login> {
           ),
         ),
       ),
-      // ),
-      //   ),
-      //   //     ],
-      //   //   ),
-      //   // ),
-      // ),
     );
   }
 }
@@ -327,7 +350,7 @@ class TitleText extends StatelessWidget {
         ),
         Center(
           child: Text(
-            'Never miss a oppurtunity',
+            'Never miss an oppurtunity',
             style: TextStyle(
               fontFamily: 'Orbitron',
               fontSize: 20,

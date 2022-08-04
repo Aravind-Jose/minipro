@@ -4,8 +4,10 @@ import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventnoti/pages/createevent.dart';
+import 'package:eventnoti/pages/eventdetails.dart';
 import 'package:eventnoti/pages/loginpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -156,10 +158,10 @@ class _dashboardState extends State<dashboard> {
                     return GestureDetector(
                       onPanUpdate: (details) async {
                         // Swiping in right direction.
-                        if (details.delta.dx > 0) {}
+                        if (details.delta.dx < 0) {}
 
                         // Swiping in left direction.
-                        if (details.delta.dx < 0) {
+                        if (details.delta.dx > 0) {
                           final _db = FirebaseFirestore.instance;
 
                           await _db
@@ -167,6 +169,12 @@ class _dashboardState extends State<dashboard> {
                               .doc(data['name'])
                               .delete();
                         }
+                      },
+                      onTap: () {
+                        Get.to(Eventdet(
+                          name: data['name'],
+                          login: "org",
+                        ));
                       },
                       child: Card(
                         child: ListTile(
@@ -252,33 +260,83 @@ class _EventReState extends State<EventRe> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.all(10),
-            child: TextField(
-              onChanged: searchevent,
-              decoration: InputDecoration(
-                  hintText: 'Event name',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Colors.white))),
-            ),
-          ),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: eventss.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        eventss[index],
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 20),
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('events').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else
+            // ignore: curly_braces_in_flow_control_structures
+            return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("images/bg.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: snapshot.data!.docs.map((doc) {
+                  Map<String, dynamic>? data =
+                      doc.data() as Map<String, dynamic>?;
+                  DateTime d1 = DateTime.parse(data!['endDate']);
+                  DateTime now = new DateTime.now();
+                  DateTime d2 = new DateTime(now.year, now.month, now.day);
+                  final User? user = FirebaseAuth.instance.currentUser;
+                  print(user!.email);
+                  if (data['username'] != user.email) {
+                    a = data['organizationname'];
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(Eventdet(
+                          name: data['name'],
+                          login: "user",
+                        ));
+                      },
+                      child: Card(
+                        child: ListTile(
+                          // trailing: Expanded(
+                          //   child: Row(
+                          //     children: [
+                          //       Text(data['endDate'].toString()),
+                          //       Text(data['startDate'].toString()),
+                          //     ],
+                          //   ),
+                          // ),
+                          title: Row(
+                            children: [
+                              Text(data['name'].toString()),
+                              Expanded(child: SizedBox()),
+                              Text("Start: ${data['startDate'].toString()}"),
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Text(data['description'].toString()),
+                              Expanded(child: SizedBox()),
+                              Text("End: ${data['endDate'].toString()}"),
+                            ],
+                          ),
+                        ),
                       ),
-                      trailing: Icon(Icons.arrow_forward_ios),
                     );
-                  })),
-        ],
+                  }
+                  return Card();
+                }).toList(),
+              ),
+            );
+        },
       ),
     );
   }
